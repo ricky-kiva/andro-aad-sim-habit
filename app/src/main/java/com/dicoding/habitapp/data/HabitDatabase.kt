@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.dicoding.habitapp.R
 import org.json.JSONArray
 import org.json.JSONException
@@ -11,8 +12,9 @@ import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.util.concurrent.Executors
 
-//TODO 3 : Define room database class and prepopulate database using JSON
+// XTODO 3 : Define room database class and prepopulate database using JSON
 @Database(entities=[Habit::class], version=1, exportSchema=false)
 abstract class HabitDatabase : RoomDatabase() {
 
@@ -28,13 +30,18 @@ abstract class HabitDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     HabitDatabase::class.java,
-                    "habit_database"
-                )
-                    .createFromAsset("habits.json")
-                    .build()
-
-                prepopulateDatabase(instance, context)
-
+                    "habit.db"
+                ).fallbackToDestructiveMigration()
+                    .addCallback(object : Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            INSTANCE?.let { habitDatabase ->
+                                Executors.newSingleThreadExecutor().execute {
+                                    fillWithStartingData(context, habitDatabase.habitDao())
+                                }
+                            }
+                        }
+                    }).build()
                 INSTANCE = instance
                 instance
             }
@@ -50,7 +57,7 @@ abstract class HabitDatabase : RoomDatabase() {
                             Habit(
                                 item.getInt("id"),
                                 item.getString("title"),
-                                item.getLong("minutesFocus"),
+                                item.getLong("focusTime"),
                                 item.getString("startTime"),
                                 item.getString("priorityLevel")
                             )
@@ -77,16 +84,8 @@ abstract class HabitDatabase : RoomDatabase() {
                 exception.printStackTrace()
             } catch (exception: JSONException) {
                 exception.printStackTrace()
-            } finally {
-                `in`.close()
             }
             return null
         }
-
-        private fun prepopulateDatabase(database: HabitDatabase, context: Context) {
-            val habitDao = database.habitDao()
-            fillWithStartingData(context, habitDao)
-        }
-
     }
 }
