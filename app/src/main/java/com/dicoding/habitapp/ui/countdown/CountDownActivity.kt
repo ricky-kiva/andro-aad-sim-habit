@@ -19,15 +19,13 @@ import com.dicoding.habitapp.utils.HABIT_TITLE
 
 class CountDownActivity : AppCompatActivity() {
 
-    private lateinit var workManager: WorkManager
-    private lateinit var habit: Habit
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_count_down)
         supportActionBar?.title = "Count Down"
 
         val habit = intent.getParcelableExtra<Habit>(HABIT) as Habit
+        val workManager = WorkManager.getInstance(applicationContext)
 
         findViewById<TextView>(R.id.tv_count_down_title).text = habit.title
 
@@ -43,17 +41,21 @@ class CountDownActivity : AppCompatActivity() {
         viewModel.eventCountDownFinish.observe(this) { countdownFinished ->
             if (countdownFinished) {
                 updateButtonState(isRunning = false)
+                notifyWorker(habit, workManager)
             }
         }
 
         // XTODO 13 : Start and cancel One Time Request WorkManager to notify when time is up.
 
         findViewById<Button>(R.id.btn_start).setOnClickListener {
-            startTimer()
+            viewModel.startTimer()
+            updateButtonState(isRunning = true)
         }
 
         findViewById<Button>(R.id.btn_stop).setOnClickListener {
-            cancelTimer()
+            cancelTimer(workManager)
+            viewModel.resetTimer()
+            updateButtonState(isRunning = false)
         }
     }
 
@@ -62,7 +64,7 @@ class CountDownActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_stop).isEnabled = isRunning
     }
 
-    private fun startTimer() {
+    private fun notifyWorker(habit: Habit, workManager: WorkManager) {
         val inputData = workDataOf(HABIT_ID to habit.id, HABIT_TITLE to habit.title)
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
@@ -76,7 +78,7 @@ class CountDownActivity : AppCompatActivity() {
         workManager.enqueue(notificationRequest)
     }
 
-    private fun cancelTimer() {
+    private fun cancelTimer(workManager: WorkManager) {
         workManager.cancelAllWorkByTag(HABIT_ID)
     }
 }
