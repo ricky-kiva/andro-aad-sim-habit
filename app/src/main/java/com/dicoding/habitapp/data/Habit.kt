@@ -8,8 +8,8 @@ import kotlinx.parcelize.Parcelize
 
 // XTODO 1 : Define a local database table using the schema in app/schema/habits.json
 @Parcelize
-@Entity(tableName="habits")
-data class HabitEntity(
+@Entity(tableName="habit")
+data class Habit(
     @PrimaryKey(autoGenerate=true)
     @ColumnInfo(name="id")
     val id: Int = 0,
