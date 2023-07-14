@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import com.dicoding.habitapp.R
 
@@ -47,7 +48,12 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-            //TODO 11 : Update theme based on value in ListPreference
+            // XTODO 11 : Update theme based on value in ListPreference
+            val themePreference: ListPreference? = findPreference(getString(R.string.pref_key_dark))
+            themePreference?.setOnPreferenceChangeListener { _, newValue ->
+                val themeMode = newValue.toString().toInt()
+                updateTheme(themeMode)
+            }
         }
 
         private fun updateTheme(mode: Int): Boolean {
