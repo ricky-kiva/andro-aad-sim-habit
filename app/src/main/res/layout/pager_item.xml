@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:gravity="center"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:textSize="36sp"
             app:layout_constraintBottom_toTopOf="@+id/pager_tv_start_time"
