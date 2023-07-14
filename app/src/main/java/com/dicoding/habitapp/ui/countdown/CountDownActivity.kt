@@ -34,7 +34,7 @@ class CountDownActivity : AppCompatActivity() {
         val viewModel = ViewModelProvider(this)[CountDownViewModel::class.java]
 
         // XTODO 10 : Set initial time and observe current time. Update button state when countdown is finished
-        viewModel.setInitialTime(habit.minutesFocus * 60 * 1000)
+        viewModel.setInitialTime(habit.minutesFocus)
 
         viewModel.currentTimeString.observe(this) { timeString ->
             findViewById<TextView>(R.id.tv_count_down).text = timeString
