@@ -2,6 +2,7 @@ package com.dicoding.habitapp.data
 
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -22,9 +23,9 @@ interface HabitDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg habits: Habit)
 
-    @Query("DELETE FROM habit WHERE id = :habitId")
-    fun deleteHabit(habitId: Int)
+    @Delete
+    fun deleteHabit(habit: Habit)
 
-    @Query("SELECT * FROM habits WHERE priorityLevel = :level ORDER BY RANDOM() LIMIT 1")
+    @Query("SELECT * FROM habit WHERE priorityLevel = :level ORDER BY RANDOM() LIMIT 1")
     fun getRandomHabitByPriorityLevel(level: String): LiveData<Habit>
 }
