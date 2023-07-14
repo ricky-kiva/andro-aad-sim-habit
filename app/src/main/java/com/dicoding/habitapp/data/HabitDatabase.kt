@@ -1,6 +1,8 @@
 package com.dicoding.habitapp.data
 
 import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.dicoding.habitapp.R
 import org.json.JSONArray
@@ -11,6 +13,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 
 //TODO 3 : Define room database class and prepopulate database using JSON
+@Database(entities=[Habit::class], version=1, exportSchema=false)
 abstract class HabitDatabase : RoomDatabase() {
 
     abstract fun habitDao(): HabitDao
@@ -21,7 +24,20 @@ abstract class HabitDatabase : RoomDatabase() {
         private var INSTANCE: HabitDatabase? = null
 
         fun getInstance(context: Context): HabitDatabase {
-            throw NotImplementedError("Not yet implemented")
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    HabitDatabase::class.java,
+                    "habit_database"
+                )
+                    .createFromAsset("habits.json")
+                    .build()
+
+                prepopulateDatabase(instance, context)
+
+                INSTANCE = instance
+                instance
+            }
         }
 
         private fun fillWithStartingData(context: Context, dao: HabitDao) {
@@ -34,7 +50,7 @@ abstract class HabitDatabase : RoomDatabase() {
                             Habit(
                                 item.getInt("id"),
                                 item.getString("title"),
-                                item.getLong("focusTime"),
+                                item.getLong("minutesFocus"),
                                 item.getString("startTime"),
                                 item.getString("priorityLevel")
                             )
@@ -61,8 +77,15 @@ abstract class HabitDatabase : RoomDatabase() {
                 exception.printStackTrace()
             } catch (exception: JSONException) {
                 exception.printStackTrace()
+            } finally {
+                `in`.close()
             }
             return null
+        }
+
+        private fun prepopulateDatabase(database: HabitDatabase, context: Context) {
+            val habitDao = database.habitDao()
+            fillWithStartingData(context, habitDao)
         }
 
     }

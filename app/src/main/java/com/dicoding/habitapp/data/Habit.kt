@@ -18,7 +18,7 @@ data class Habit(
     val title: String,
 
     @ColumnInfo(name="minutesFocus")
-    val minutesFocus: Int,
+    val minutesFocus: Long,
 
     @ColumnInfo(name="startTime")
     val startTime: String,
