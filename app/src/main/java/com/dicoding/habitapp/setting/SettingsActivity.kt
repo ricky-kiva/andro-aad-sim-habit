@@ -51,15 +51,20 @@ class SettingsActivity : AppCompatActivity() {
             // XTODO 11 : Update theme based on value in ListPreference
             val themePreference: ListPreference? = findPreference(getString(R.string.pref_key_dark))
             themePreference?.setOnPreferenceChangeListener { _, newValue ->
-                val themeMode = newValue.toString().toInt()
+                val themeMode = when (newValue.toString()) {
+                    getString(R.string.pref_dark_follow_system) -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    getString(R.string.pref_dark_on) -> AppCompatDelegate.MODE_NIGHT_YES
+                    getString(R.string.pref_dark_off) -> AppCompatDelegate.MODE_NIGHT_NO
+                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                }
                 updateTheme(themeMode)
+                true
             }
         }
 
-        private fun updateTheme(mode: Int): Boolean {
+        private fun updateTheme(mode: Int) {
             AppCompatDelegate.setDefaultNightMode(mode)
             requireActivity().recreate()
-            return true
         }
     }
 }
