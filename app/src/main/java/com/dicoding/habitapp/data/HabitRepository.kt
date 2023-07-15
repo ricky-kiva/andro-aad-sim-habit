@@ -42,7 +42,7 @@ class HabitRepository(private val habitDao: HabitDao, private val executor: Exec
         return LivePagedListBuilder(habitDao.getHabits(query), config).build()
     }
 
-    //TODO 5 : Complete other function inside repository
+    // XTODO 5 : Complete other function inside repository
     fun getHabitById(habitId: Int): LiveData<Habit> {
         return habitDao.getHabitById(habitId)
     }

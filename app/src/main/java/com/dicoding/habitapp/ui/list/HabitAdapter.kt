@@ -22,6 +22,7 @@ class HabitAdapter(
     }
 
     override fun onBindViewHolder(holder: HabitViewHolder, position: Int) {
+        // XTODO 9 : Get data and bind them to ViewHolder
         val habit = getItem(position)
         habit?.let { holder.bind(it) }
     }
