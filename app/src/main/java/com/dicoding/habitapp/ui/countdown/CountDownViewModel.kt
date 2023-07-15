@@ -50,6 +50,11 @@ class CountDownViewModel : ViewModel() {
         _eventCountDownFinish.value = true
     }
 
+    fun onStopButtonClick() {
+        timer?.cancel()
+        currentTime.value = initialTime.value
+    }
+
     override fun onCleared() {
         super.onCleared()
         timer?.cancel()

@@ -54,7 +54,7 @@ class CountDownActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btn_stop).setOnClickListener {
             cancelTimer(workManager)
-            viewModel.resetTimer()
+            viewModel.onStopButtonClick()
             updateButtonState(isRunning = false)
         }
     }
